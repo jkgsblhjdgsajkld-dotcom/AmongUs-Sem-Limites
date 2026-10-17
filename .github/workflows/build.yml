@@ -1,12 +1,10 @@
 
-name: Build Reactor starter
+name: Build Among Us Sem Limites
 
-on: 
+on:
   workflow_dispatch:
   push:
-    branches:
-      - main
-      - master
+    branches: [main, master]
 
 jobs:
   build:
@@ -29,14 +27,21 @@ jobs:
         shell: pwsh
         run: dotnet new reactor -n AmongUsSemLimites -o buildsrc
 
+      - name: Show project files
+        shell: pwsh
+        run: Get-ChildItem buildsrc -Recurse -File | Select-Object -ExpandProperty FullName
+
       - name: Build
         shell: pwsh
         run: dotnet build buildsrc -c Release
 
-      - name: Upload DLL
+      - name: Upload build and source
         uses: actions/upload-artifact@v4
         with:
-          name: among-us-sem-limites-starter
-          path: buildsrc/**/*.dll
+          name: among-us-sem-limites-source-and-dll
+          path: |
+            buildsrc/**/*.cs
+            buildsrc/**/*.csproj
+            buildsrc/**/*.json
+            buildsrc/**/*.dll
           if-no-files-found: error
-
