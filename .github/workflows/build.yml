@@ -1,1 +1,42 @@
 
+name: Build Reactor starter
+
+on: 
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+      - master
+
+jobs:
+  build:
+    runs-on: windows-latest
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup .NET
+        uses: actions/setup-dotnet@v4
+        with:
+          dotnet-version: '8.0.x'
+
+      - name: Install Reactor template
+        shell: pwsh
+        run: dotnet new install Reactor.Template
+
+      - name: Generate project
+        shell: pwsh
+        run: dotnet new reactor -n AmongUsSemLimites -o buildsrc
+
+      - name: Build
+        shell: pwsh
+        run: dotnet build buildsrc -c Release
+
+      - name: Upload DLL
+        uses: actions/upload-artifact@v4
+        with:
+          name: among-us-sem-limites-starter
+          path: buildsrc/**/*.dll
+          if-no-files-found: error
+
